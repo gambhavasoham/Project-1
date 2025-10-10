@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Non-stop Running Line (Marquee) with Image & Duration</title>
+<style>
+  :root {
+    /* default duration in seconds */
+    --duration: 12s;
+  }
+
+  body {
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    margin: 2rem;
+    background: #f7f8fb;
+    color: #111;
+    line-height: 1.4;
+  }
+
+  h1 { font-size: 1.25rem; margin-bottom: .5rem; }
+
+  /* marquee container */
+  .marquee {
+    position: relative;
+    overflow: hidden;
+    border-radius: 10px;
+    background: linear-gradient(90deg, #ffffff 0%, #f2f6ff 100%);
+    box-shadow: 0 4px 18px rgba(20,30,60,0.06);
+    padding: 0.4rem 0;
+  }
+
+  /* the moving strip — wide enough to hold two copies for seamless scroll */
+  .marquee__track {
+    display: flex;
+    gap: 2rem;
+    align-items: center;
+    white-space: nowrap;
+    /* animation uses CSS variable for duration */
+    animation: scroll var(--duration) linear infinite;
+  }
+
+  /* duplicate wrapper ensures seamless looping */
+  .marquee__group {
+    display: inline-flex;
+    gap: 2rem;
+    align-items: center;
+  }
+
+  .marquee__item {
+    display: inline-flex;
+    gap: 0.75rem;
+    align-items: center;
+    padding: 0.25rem 0.75rem;
+    border-radius: 999px;
+    background: rgba(10, 40, 100, 0.03);
+    font-weight: 600;
+    font-size: 0.95rem;
+  }
+
+  .marquee__item img {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    border-radius: 8px;
+    display: block;
+    flex-shrink: 0;
+  }
+
+  /* Pause animation when hovering for better UX */
+  .marquee:hover .marquee__track,
+  .marquee:focus-within .marquee__track {
+    animation-play-state: paused;
+  }
+
+  /* Respect user preference for reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    .marquee__track { animation: none; transform: none; }
+  }
+
+  @keyframes scroll {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-50%);
+    }
+  }
+
+  /* small controls area styling */
+  .controls {
+    margin-top: 0.75rem;
+    display: flex;
+    gap: .5rem;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  label { font-size: 0.95rem; }
+  input[type="number"] {
+    width: 80px;
+    padding: 6px 8px;
+    border-radius: 6px;
+    border: 1px solid #dde6ff;
+    background: white;
+  }
+  button {
+    padding: 6px 10px;
+    border-radius: 8px;
+    border: none;
+    background: #0b63ff;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  button:active { transform: translateY(1px); }
+
+  /* responsive adjustments */
+  @media (max-width: 480px) {
+    .marquee__item img { width: 34px; height: 34px; }
+    .marquee__item { font-size: .9rem; }
+  }
+</style>
+</head>
+<body>
+
+<h1>Non-stop running line with image — adjustable duration</h1>
+
+<!-- MARQUEE -->
+<div class="marquee" aria-label="News ticker (hover to pause)">
+  <!-- track will be duplicated with JavaScript or you can duplicate in HTML -->
+  <div class="marquee__track" id="marqueeTrack" role="marquee">
+    <!-- group 1 -->
+    <div class="marquee__group">
+      <div class="marquee__item">
+        <img src="https://via.placeholder.com/80x80.png?text=Img1" alt="Sample image 1">
+        <span>Breaking: New release — Version 2.4 available now.</span>
+      </div>
+
+      <div class="marquee__item">
+        <img src="https://via.placeholder.com/80x80.png?text=Img2" alt="Sample image 2">
+        <span>Tip: Use keyboard shortcuts to speed up your workflow.</span>
+      </div>
+
+      <div class="marquee__item">
+        <img src="https://via.placeholder.com/80x80.png?text=Img3" alt="Sample image 3">
+        <span>Event: Hackathon starts Oct 15 — register today!</span>
+      </div>
+
+      <div class="marquee__item">
+        <img src="https://via.placeholder.com/80x80.png?text=Img4" alt="Sample image 4">
+        <span>Offer: 20% off courses for the next 48 hours.</span>
+      </div>
+    </div>
+
+    <!-- group 2 (duplicate for smooth seamless scroll) -->
+    <div class="marquee__group" aria-hidden="true">
+      <div class="marquee__item">
+        <img src="https://via.placeholder.com/80x80.png?text=Img1" alt="">
+        <span>Breaking: New release — Version 2.4 available now.</span>
+      </div>
+
+      <div class="marquee__item">
+        <img src="https://via.placeholder.com/80x80.png?text=Img2" alt="">
+        <span>Tip: Use keyboard shortcuts to speed up your workflow.</span>
+      </div>
+
+      <div class="marquee__item">
+        <img src="https://via.placeholder.com/80x80.png?text=Img3" alt="">
+        <span>Event: Hackathon starts Oct 15 — register today!</span>
+      </div>
+
+      <div class="marquee__item">
+        <img src="https://via.placeholder.com/80x80.png?text=Img4" alt="">
+        <span>Offer: 20% off courses for the next 48 hours.</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Controls for duration -->
+<div class="controls" aria-hidden="false">
+  <label for="durationSec">Scroll duration (seconds):</label>
+  <input id="durationSec" type="number" min="2" step="0.5" value="12" />
+  <button id="applyBtn">Apply</button>
+  <button id="pauseBtn" type="button">Pause</button>
+  <button id="resumeBtn" type="button">Resume</button>
+  <small style="margin-left: .5rem; color:#666;">(Lower = faster)</small>
+</div>
+
+<script>
+  // Elements
+  const track = document.getElementById('marqueeTrack');
+  const durationInput = document.getElementById('durationSec');
+  const applyBtn = document.getElementById('applyBtn');
+  const pauseBtn = document.getElementById('pauseBtn');
+  const resumeBtn = document.getElementById('resumeBtn');
+
+  // Set initial duration CSS variable from input
+  function setDurationFromInput() {
+    let val = parseFloat(durationInput.value);
+    if (!isFinite(val) || val <= 0) val = 12;
+    // Set CSS custom property on the marquee element
+    track.style.setProperty('--duration', val + 's');
+  }
+
+  applyBtn.addEventListener('click', () => {
+    setDurationFromInput();
+    // briefly announce change for screen reader users (optional)
+    applyBtn.setAttribute('aria-live', 'polite');
+  });
+
+  pauseBtn.addEventListener('click', () => {
+    track.style.animationPlayState = 'paused';
+    // also pause when user wants
+  });
+
+  resumeBtn.addEventListener('click', () => {
+    track.style.animationPlayState = 'running';
+  });
+
+  // initialize
+  setDurationFromInput();
+
+  // Optional: if content width changes (responsive), adjust duplicate width behavior
+  // The simple duplicate approach above works well in most cases; if you add or remove items dynamically
+  // consider recalculating or re-duplicating the content for perfect seam.
+</script>
+
+</body>
+  </html>
